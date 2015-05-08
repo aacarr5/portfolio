@@ -19,6 +19,10 @@ class BingoBoard
   attr_reader :name, :counter
 
   def initialize(name)
+    # This allows for really weird 'names' like @#$$$#@ or '         ' or 'L()L!T@'
+    # Chill if that's what you're going for, but it might be easier to match what IS
+    # a valid name (like /[AZ-az]+/ or something like that) rather than matching what
+    # isn't valid
     raise ArgumentError.new("Please enter valid name") if name =~/[0-9]/ || name.class != String
     @bingo_board = board.transpose
     @solved = false
@@ -100,17 +104,11 @@ private
       end
 
       if ( #is there a better way to write this?
-        @bingo_board[0][0] == "X" &&
-        @bingo_board[1][1] == "X" &&
-        @bingo_board[2][2] == "X" &&
-        @bingo_board[3][3] == "X" &&
-        @bingo_board[4][4] == "X" ) ||
-        
-        (@bingo_board[0][4] == "X" &&
-        @bingo_board[1][3] == "X" &&
-        @bingo_board[2][2] == "X" &&
-        @bingo_board[3][1] == "X" &&
-        @bingo_board[4][0] == "X" )
+        # Maybe like this? Extracts the diagonal elements and checks to see if they are all "X"s
+        # Relies on the fact that if you have a diagonal going from bottom left to top right
+        # You can transpose and reverse to convert it to a diagonal going from top left to bottom right
+        (0..@bingo_board.length()-1).collect{|i|@bingo_board[i][i]}.map{|e|e=="X"}.reduce(:&) ||
+        (0..@bingo_board.length()-1).collect{|i|@bingo_board.transpose().reverse()[i][i]}.map{|e|e=="X"}.reduce(:&))
             answer = "Diagonal Win!"
             @solved = true
         end

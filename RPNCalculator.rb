@@ -21,7 +21,7 @@ class RPNCalculator
       end
 
       def push(number)
-        @array.push(number*1.0)
+        @array.push(number*1.0) # I might use number.to_f instead
       end
 
       def plus
